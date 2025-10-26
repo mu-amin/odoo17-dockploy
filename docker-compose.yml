@@ -27,7 +27,7 @@ services:
       - odoo-odoo17-data:/var/lib/odoo
     networks:
       - odoo-net
-      - dokploy-traefik
+      - dokploy-network
     labels:
       # Enable Traefik proxy for this service
       - "traefik.enable=true"
@@ -69,5 +69,5 @@ volumes:
 
 networks:
   odoo-net:
-  dokploy-traefik:
+  dokploy-network:
     external: true
