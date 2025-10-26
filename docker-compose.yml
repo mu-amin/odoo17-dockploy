@@ -1,10 +1,13 @@
 services:
   odoo17:
     image: odoo:17.0
+    container_name: odoo17
     depends_on:
       - db
-    # ports:
-    # - "8069:8069"
+    environment:
+      VIRTUAL_HOST: app.mukhtar.so
+      LETSENCRYPT_HOST: app.mukhtar.so
+      LETSENCRYPT_EMAIL: info@mukhtar.so
     volumes:
       - odoo-odoo17-data:/var/lib/odoo
       - ./config:/etc/odoo
@@ -14,42 +17,43 @@ services:
 
   db:
     image: postgres:16
+    container_name: odoo-db
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
     networks:
       - app-network
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_USER}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
-    ports:
-      - "5050:80"
-    depends_on:
-      - db
+  nginx-proxy:
+    image: nginx:stable
+    container_name: nginx-proxy
     restart: unless-stopped
-    networks:
-      - app-network
-
-  nginx:
-    image: nginx:latest
-    container_name: nginx
     ports:
       - "80:80"
       - "443:443"
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-      - ./nginx/logs:/var/log/nginx
-    depends_on:
-      - odoo17
+    networks:
+      - app-network
+
+  letsencrypt:
+    image: nginxproxy/acme-companion:latest
+    container_name: letsencrypt
     restart: unless-stopped
+    environment:
+      NGINX_PROXY_CONTAINER: nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
     networks:
       - app-network
 
