@@ -11,51 +11,51 @@ services:
     networks:
       - odoo-net
 
-odoo17:
-    image: odoo:17.0
-    container_name: odoo17
-    # ... (rest of the config is unchanged)
-    networks:
-      - odoo-net
-      - dokploy-network
-    labels:
-      # Enable Traefik proxy for this service
-      - "traefik.enable=true"
+  odoo17:
+      image: odoo:17.0
+      container_name: odoo17
+      # ... (rest of the config is unchanged)
+      networks:
+        - odoo-net
+        - dokploy-network
+      labels:
+        # Enable Traefik proxy for this service
+        - "traefik.enable=true"
 
-      # ---------------------------
-      # Main Odoo Web (8069)
-      # ---------------------------
-      - "traefik.http.routers.odoo17.rule=Host(`app.mukhtar.so`)"
-      - "traefik.http.routers.odoo17.entrypoints=websecure"
-      - "traefik.http.routers.odoo17.tls.certresolver=letsencrypt"
-      - "traefik.http.services.odoo17.loadbalancer.server.port=8069"
-      # 👇 ADD THIS EXPLICIT LINKAGE for the main router/service
-      - "traefik.http.routers.odoo17.service=odoo17" 
+        # ---------------------------
+        # Main Odoo Web (8069)
+        # ---------------------------
+        - "traefik.http.routers.odoo17.rule=Host(`app.mukhtar.so`)"
+        - "traefik.http.routers.odoo17.entrypoints=websecure"
+        - "traefik.http.routers.odoo17.tls.certresolver=letsencrypt"
+        - "traefik.http.services.odoo17.loadbalancer.server.port=8069"
+        # 👇 ADD THIS EXPLICIT LINKAGE for the main router/service
+        - "traefik.http.routers.odoo17.service=odoo17" 
 
-      # ---------------------------
-      # Longpolling / Websocket (8072)
-      # ---------------------------
-      - "traefik.http.routers.odoo17-websocket.rule=Host(`app.mukhtar.so`) && PathPrefix(`/websocket`)"
-      - "traefik.http.routers.odoo17-websocket.entrypoints=websecure"
-      - "traefik.http.routers.odoo17-websocket.tls.certresolver=letsencrypt"
-      - "traefik.http.services.odoo17-websocket.loadbalancer.server.port=8072"
-      # 👇 ADD THIS EXPLICIT LINKAGE for the websocket router/service
-      - "traefik.http.routers.odoo17-websocket.service=odoo17-websocket" 
+        # ---------------------------
+        # Longpolling / Websocket (8072)
+        # ---------------------------
+        - "traefik.http.routers.odoo17-websocket.rule=Host(`app.mukhtar.so`) && PathPrefix(`/websocket`)"
+        - "traefik.http.routers.odoo17-websocket.entrypoints=websecure"
+        - "traefik.http.routers.odoo17-websocket.tls.certresolver=letsencrypt"
+        - "traefik.http.services.odoo17-websocket.loadbalancer.server.port=8072"
+        # 👇 ADD THIS EXPLICIT LINKAGE for the websocket router/service
+        - "traefik.http.routers.odoo17-websocket.service=odoo17-websocket" 
 
-      # ---------------------------
-      # Middlewares (Performance + Upload tuning)
-      # ... (Middlewares are unchanged, but must come after the routers they apply to)
-      # ---------------------------
-      # Enable gzip compression
-      - "traefik.http.middlewares.odoo17-compress.compress=true"
-      # Limit upload body size (similar to client_max_body_size 10MB)
-      - "traefik.http.middlewares.odoo17-bodylimit.buffering.maxRequestBodyBytes=10485760"
-      # Increase memory buffer (similar to client_body_buffer_size)
-      - "traefik.http.middlewares.odoo17-bodylimit.buffering.memRequestBodyBytes=10485760"
-      # Apply both middlewares to main web route
-      - "traefik.http.routers.odoo17.middlewares=odoo17-compress,odoo17-bodylimit"
+        # ---------------------------
+        # Middlewares (Performance + Upload tuning)
+        # ... (Middlewares are unchanged, but must come after the routers they apply to)
+        # ---------------------------
+        # Enable gzip compression
+        - "traefik.http.middlewares.odoo17-compress.compress=true"
+        # Limit upload body size (similar to client_max_body_size 10MB)
+        - "traefik.http.middlewares.odoo17-bodylimit.buffering.maxRequestBodyBytes=10485760"
+        # Increase memory buffer (similar to client_body_buffer_size)
+        - "traefik.http.middlewares.odoo17-bodylimit.buffering.memRequestBodyBytes=10485760"
+        # Apply both middlewares to main web route
+        - "traefik.http.routers.odoo17.middlewares=odoo17-compress,odoo17-bodylimit"
 
-      
+
 volumes:
   odoo-db-data:
   odoo-odoo17-data:
