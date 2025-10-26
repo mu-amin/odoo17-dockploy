@@ -1,12 +1,12 @@
 services:
-  odoo17:
-    image: odoo:17.0
+  odoo18:
+    image: odoo:18.0
     depends_on:
       - db
     # ports:
     # - "8069:8069"
     volumes:
-      - odoo-odoo17-data:/var/lib/odoo
+      - odoo-odoo18-data:/var/lib/odoo
       - ./config:/etc/odoo
       - ./addons:/mnt/extra-addons
     networks:
@@ -48,13 +48,13 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl
       - ./nginx/logs:/var/log/nginx
     depends_on:
-      - odoo17
+      - odoo18
     restart: unless-stopped
     networks:
       - app-network
 
 volumes:
-  odoo-odoo17-data:
+  odoo-odoo18-data:
   odoo-db-data:
 
 networks:
