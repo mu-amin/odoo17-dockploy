@@ -7,7 +7,7 @@ services:
     environment:
       VIRTUAL_HOST: app.mukhtar.so
       LETSENCRYPT_HOST: app.mukhtar.so
-      LETSENCRYPT_EMAIL: youremail@example.com
+      LETSENCRYPT_EMAIL: info@mukhtar.so
     volumes:
       - odoo-odoo17-data:/var/lib/odoo
       - ./config:/etc/odoo
