@@ -6,7 +6,7 @@ services:
     volumes:
       - odoo-odoo17-data:/var/lib/odoo
       - ./config:/etc/odoo
-      - ./addons:/mnt/extra-addons
+      - ./odoo-custom-addons:/mnt/extra-addons
     networks:
       - app-network
     restart: unless-stopped
