@@ -72,7 +72,8 @@ services:
     container_name: node_exporter
     restart: unless-stopped
     pid: host
-    network_mode: bridge
+    networks:
+      - app-network
     ports:
       - "9100:9100"
     volumes:
@@ -84,6 +85,7 @@ services:
       - '--path.sysfs=/host/sys'
       - '--path.rootfs=/rootfs'
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
